@@ -31,6 +31,6 @@ this.channel = Object.branch(function (channelPrototype) {
     channelPrototype.shutdown = function () {
         this.listeners.forEach(function (listener) {
             window.removeEventListener(this.name, listener, false);
-        });
+        }, this);
     };
 });
