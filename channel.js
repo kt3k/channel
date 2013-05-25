@@ -25,7 +25,7 @@ this.channel = Object.branch(function (channelPrototype) {
     };
 
     channelPrototype.unsubscribe = function (listener) {
-        window.removeEventListener();
+        window.removeEventListener(this.name, listener, false);
     };
 
     channelPrototype.shutdown = function () {
