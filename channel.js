@@ -12,25 +12,33 @@ this.channel = Object.branch(function (channelPrototype) {
         }
 
         this.name = name;
+        this.listeners = [];
     };
 
     channelPrototype.subscribe = function (listener) {
-        window.addEventListener(this.name, listener, false);
+        this.listeners.push(listener);
+
+        listener.__listener__ = function (ev) {
+            listener(ev.detail);
+        };
+
+        window.addEventListener(this.name, listener.__listener__, false);
     };
 
     channelPrototype.broadcast = function (data) {
-        var ev = new CustomEvent(this.name);
-        ev.data = data;
+        var ev = new CustomEvent(this.name, {detail: data});
         window.dispatchEvent(ev);
     };
 
     channelPrototype.unsubscribe = function (listener) {
-        window.removeEventListener(this.name, listener, false);
+        window.removeEventListener(this.name, listener.__listener__, false);
     };
 
     channelPrototype.shutdown = function () {
         this.listeners.forEach(function (listener) {
-            window.removeEventListener(this.name, listener, false);
+            window.removeEventListener(this.name, listener.__listener__, false);
         }, this);
+
+        this.listeners = [];
     };
 });
